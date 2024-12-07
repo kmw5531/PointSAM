@@ -7,8 +7,8 @@
 
 ---
 ## 📢 Latest Updates
+- **8 Dec 2024**: The complete code is released.
 - **20 Sep 2024**: The arXiv version is released [here](https://arxiv.org/abs/2409.13401).
- The code will be released soon. 
 ---
 
 
