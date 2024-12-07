@@ -27,10 +27,6 @@ pip install torch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 --index-url https
 git clone https://github.com/Lans1ng/PointSAM.git
 cd PointSAM
 pip install -r requirements.txt
-
-cd segment_anything_2
-pip install -e .
-cd ..
 ```
 
 ### 2.Prepare Dataset 
