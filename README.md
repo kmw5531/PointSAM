@@ -81,6 +81,17 @@ data
      └── Images
 
 ```
+### 3.Training
+For convenience, the `scripts` folder contains instructions for **Supervised Training**, **Self-Training**, and **PointSAM** on the NWPU VHR-10, WHU, and HRSID datasets.
+
+Here is an example of using PointSAM to train on the WHU dataset.
+```bash
+bash scripts/train_whu_pointsam.sh
+```
+
+
+
+
 
 ## 💡 Acknowledgement
 
