@@ -89,10 +89,6 @@ Here is an example of using PointSAM to train on the WHU dataset.
 bash scripts/train_whu_pointsam.sh
 ```
 
-
-
-
-
 ## 💡 Acknowledgement
 
 - [wesam](https://github.com/zhang-haojie/wesam)
@@ -102,7 +98,7 @@ bash scripts/train_whu_pointsam.sh
 
 ## 🖊️ Citation
 
-If you find this project useful in your research, please consider cite:
+If you find this project useful in your research, please consider starring ⭐ and citing 📚:
 
 ```BibTeX
 @article{liu2024pointsam,
