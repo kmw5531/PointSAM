@@ -1,9 +1,13 @@
+<div align="center">
+    
 # PointSAM: Pointly-Supervised Segment Anything Model for Remote Sensing Images
 <p align="center">
     <img src="https://i.imgur.com/waxVImv.png" alt="Oryx Video-ChatGPT">
 </p>
 
 [![paper](https://img.shields.io/badge/arXiv-Paper-<COLOR>.svg)](https://arxiv.org/abs/2409.13401)
+
+</div>
 
 ---
 ## 📢 Latest Updates
