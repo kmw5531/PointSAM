@@ -87,8 +87,6 @@ def train_sam(
             batch_time.update(time.time() - end)
             end = time.time()
 
-            # momentum_update(model, teacher_model, momentum=cfg.ema_rate)
-
             focal_losses.update(loss_focal.item(), batch_size)
             dice_losses.update(loss_dice.item(), batch_size)
             iou_losses.update(loss_iou.item(), batch_size)
