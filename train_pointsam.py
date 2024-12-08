@@ -107,51 +107,51 @@ def train_sam(
 
                 del embed
                 
-            #     if vis:
-            #         img_name = os.path.basename(img_paths[i]).split('.')[0]
+                if vis:
+                    img_name = os.path.basename(img_paths[i]).split('.')[0]
                     
-            #         image_weak = images_weak[0].permute(1,2,0).cpu().numpy()* 255
-            #         image_weak = cv2.cvtColor(image_weak, cv2.COLOR_BGR2RGB)
+                    image_weak = images_weak[0].permute(1,2,0).cpu().numpy()* 255
+                    image_weak = cv2.cvtColor(image_weak, cv2.COLOR_BGR2RGB)
 
-            #         if vis:
-            #             for j in range(len(soft_mask)):
-            #                 mask_iou = torch.max(mask_ious[j])
-            #                 image_weak_ = image_weak.copy()
-            #                 mask_area = torch.sum(gt_mask[j])
+                    if vis:
+                        for j in range(len(soft_mask)):
+                            mask_iou = torch.max(mask_ious[j])
+                            image_weak_ = image_weak.copy()
+                            mask_area = torch.sum(gt_mask[j])
                             
-            #                 gt_mask_np = gt_mask[j].cpu().numpy() * 255 
-            #                 gt_mask_img = cv2.cvtColor(gt_mask_np, cv2.COLOR_GRAY2RGB)
+                            gt_mask_np = gt_mask[j].cpu().numpy() * 255 
+                            gt_mask_img = cv2.cvtColor(gt_mask_np, cv2.COLOR_GRAY2RGB)
                             
-            #                 init_prompt_po = prompts[0][0][j][:cfg.num_points]
-            #                 init_prompt_ne = prompts[0][0][j][cfg.num_points:]
+                            init_prompt_po = prompts[0][0][j][:cfg.num_points]
+                            init_prompt_ne = prompts[0][0][j][cfg.num_points:]
                             
-            #                 for po in init_prompt_po:
-            #                     cv2.circle(image_weak_, (int(po[0]), int(po[1])), 12, (0, 0, 255), -1)
+                            for po in init_prompt_po:
+                                cv2.circle(image_weak_, (int(po[0]), int(po[1])), 12, (0, 0, 255), -1)
                                 
-            #                 init_mask_img = init_masks[j].cpu().detach().numpy() * 255
-            #                 init_mask_img = cv2.cvtColor(init_mask_img, cv2.COLOR_GRAY2RGB)
-            #                 for po,ne in zip(init_prompt_po,init_prompt_ne):
-            #                     cv2.circle(init_mask_img, (int(po[0]), int(po[1])), 12, (0, 0, 255), -1)
-            #                     cv2.circle(init_mask_img, (int(ne[0]), int(ne[1])), 12, (0, 255, 0), -1)
+                            init_mask_img = init_masks[j].cpu().detach().numpy() * 255
+                            init_mask_img = cv2.cvtColor(init_mask_img, cv2.COLOR_GRAY2RGB)
+                            for po,ne in zip(init_prompt_po,init_prompt_ne):
+                                cv2.circle(init_mask_img, (int(po[0]), int(po[1])), 12, (0, 0, 255), -1)
+                                cv2.circle(init_mask_img, (int(ne[0]), int(ne[1])), 12, (0, 255, 0), -1)
                                 
-            #                 prompt_po = new_prompts[0][0][j][:cfg.num_points]
-            #                 prompt_ne = new_prompts[0][0][j][cfg.num_points:]
-            #                 soft_mask_img = soft_mask[j].cpu().detach().numpy() * 255  
+                            prompt_po = new_prompts[0][0][j][:cfg.num_points]
+                            prompt_ne = new_prompts[0][0][j][cfg.num_points:]
+                            soft_mask_img = soft_mask[j].cpu().detach().numpy() * 255  
 
-            #                 soft_mask_img = cv2.cvtColor(soft_mask_img, cv2.COLOR_GRAY2RGB)
+                            soft_mask_img = cv2.cvtColor(soft_mask_img, cv2.COLOR_GRAY2RGB)
 
-            #                 for po,ne in zip(prompt_po,prompt_ne):
-            #                     cv2.circle(soft_mask_img, (int(po[0]), int(po[1])), 12, (0, 0, 255), -1)
-            #                     cv2.circle(soft_mask_img, (int(ne[0]), int(ne[1])), 12, (0, 255, 0), -1)
+                            for po,ne in zip(prompt_po,prompt_ne):
+                                cv2.circle(soft_mask_img, (int(po[0]), int(po[1])), 12, (0, 0, 255), -1)
+                                cv2.circle(soft_mask_img, (int(ne[0]), int(ne[1])), 12, (0, 255, 0), -1)
 
-            #                 output_dir = "./save_mask_{}/{}/{}/".format(str(float(cfg.num_points)),cfg.dataset,str(epoch))
-            #                 if not os.path.exists(output_dir):
-            #                     os.makedirs(output_dir)
-            #                 merged_image = concatenate_images_with_padding([image_weak_, gt_mask_img, init_mask_img, soft_mask_img])
-            #                 img_name_ = '{}_{}_iou{}.jpg'.format(img_name,str(j),str(mask_iou))
-            #                 if mask_iou>float(cfg.iou_thr) and mask_area>3000:
-            #                     cv2.imwrite(os.path.join(output_dir,img_name_), merged_image) 
-            #     del init_masks, mask_ious
+                            output_dir = "./save_mask_{}/{}/{}/".format(str(float(cfg.num_points)),cfg.dataset,str(epoch))
+                            if not os.path.exists(output_dir):
+                                os.makedirs(output_dir)
+                            merged_image = concatenate_images_with_padding([image_weak_, gt_mask_img, init_mask_img, soft_mask_img])
+                            img_name_ = '{}_{}_iou{}.jpg'.format(img_name,str(j),str(mask_iou))
+                            if mask_iou>float(cfg.iou_thr) and mask_area>3000:
+                                cv2.imwrite(os.path.join(output_dir,img_name_), merged_image) 
+                del init_masks, mask_ious
 
                 loss_focal += focal_loss(pred_mask, soft_mask, num_masks)
                 loss_dice += dice_loss(pred_mask, soft_mask, num_masks)
@@ -267,7 +267,6 @@ def main(cfg: Box) -> None:
     
     target_pts = offline_prototypes_generation(cfg, model, pt_data)
     
-
     train_sam(cfg, fabric, model, optimizer, scheduler, train_data, val_data, target_pts)
 
     del model, train_data, val_data
