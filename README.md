@@ -11,7 +11,7 @@
 
 ---
 ## 📢 Latest Updates
-- **2 Jan 2025**: PointSAM is accepted by TGRS.
+- **2 Jan 2025**: **PointSAM** has been accepted by TGRS and is now available [here](https://ieeexplore.ieee.org/document/10839471).
 - **8 Dec 2024**: The complete code is released.
 - **20 Sep 2024**: The arXiv version is released [here](https://arxiv.org/abs/2409.13401).
 ---
