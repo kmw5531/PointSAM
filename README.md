@@ -106,10 +106,14 @@ bash scripts/train_whu_pointsam.sh
 If you find this project useful in your research, please consider starring ⭐ and citing 📚:
 
 ```BibTeX
-@article{liu2024pointsam,
-  title={PointSAM: Pointly-Supervised Segment Anything Model for Remote Sensing Images},
+@ARTICLE{10839471,
   author={Liu, Nanqing and Xu, Xun and Su, Yongyi and Zhang, Haojie and Li, Heng-Chao},
-  journal={arXiv preprint arXiv:2409.13401},
-  year={2024}
-}
+  journal={IEEE Transactions on Geoscience and Remote Sensing}, 
+  title={PointSAM: Pointly-Supervised Segment Anything Model for Remote Sensing Images}, 
+  year={2025},
+  volume={63},
+  number={},
+  pages={1-15},
+  doi={10.1109/TGRS.2025.3529031}}
+
 ```
