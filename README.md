@@ -53,7 +53,7 @@ pip install -r requirements.txt
 
 - Instance label download address: [NWPU VHR-10 Instance Label](https://github.com/chaozhong2010/VHR-10_dataset_coco).
 
-For convenience, we have included all the JSON annotations in this repo, and you only need to download the corresponding images. Specifically, organize the dataset as follows:
+For convenience, the necessary JSON annotations are included in this repo. You only need to download the corresponding images. Organize your dataset as follows:
 
 ```
 data 
@@ -95,12 +95,14 @@ Click the links below to download the checkpoint for the corresponding model typ
 - `vit_l`: [ViT-L SAM model.](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_l_0b3195.pth)
 - `vit_b`: [ViT-B SAM model.](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth)
 
-Then move these models to `pretrain` folder.
+After downloading, move the models to the `pretrain` folder.
+
+**Note**: In our project, only the `vit-b` model is used.
 
 ### 4.Training
 For convenience, the `scripts` folder contains instructions for **Supervised Training**, **Self-Training**, and **PointSAM** on the NWPU VHR-10, WHU, and HRSID datasets.
 
-Here is an example of using PointSAM to train on the WHU dataset.
+Here’s an example of training PointSAM on the WHU dataset:
 ```bash
 bash scripts/train_whu_pointsam.sh
 ```
