@@ -24,6 +24,7 @@
 
 ## 🎮 Getting Started
 ### 1.Install Environment
+To ensure compatibility, **Python version must not exceed 3.10 **. Follow these steps to set up your environment:
 ```bash
 conda create --name pointsam python=3.10
 conda activate pointsam
