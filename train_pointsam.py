@@ -261,7 +261,8 @@ def main(cfg: Box) -> None:
         full_checkpoint = fabric.load(cfg.model.ckpt)
         model.load_state_dict(full_checkpoint["model"])
         optimizer.load_state_dict(full_checkpoint["optimizer"])
-        
+    print('-'*100)
+    print('\033[92mDirect test on the original SAM.\033[0m') 
     _, _, = validate(fabric, cfg, model, val_data, name=cfg.name, epoch=0)
     del _     
     

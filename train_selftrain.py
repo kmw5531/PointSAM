@@ -173,7 +173,9 @@ def main(cfg: Box) -> None:
         optimizer.load_state_dict(full_checkpoint["optimizer"])
 
     anchor_model = copy_model(model)
-    # validate(fabric, cfg, anchor_model, val_data, name=cfg.name, epoch=0)
+    print('-'*100)
+    print('\033[92mDirect test on the original SAM.\033[0m') 
+    validate(fabric, cfg, anchor_model, val_data, name=cfg.name, epoch=0)
     train_sam(cfg, fabric, model, anchor_model, optimizer, scheduler, train_data, val_data)
 
     del model, anchor_model, train_data, val_data
