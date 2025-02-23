@@ -15,7 +15,7 @@ config = {
 
     "start_lora_layer": 1,
     "lora_rank": 4,
-    "mem_bank_max_len": 128,
+    "mem_bank_max_len": 512,
     "match_interval": 30,
     "iou_thr": 0.1,
 
