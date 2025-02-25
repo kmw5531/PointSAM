@@ -107,6 +107,24 @@ Here’s an example of training PointSAM on the WHU dataset:
 bash scripts/train_whu_pointsam.sh
 ```
 
+### 5. Inference
+
+Here’s an example of how to perform inference:
+
+```
+python main.py --cfg <CONFIG_FILE_PATH> --out_dir <OUTPUT_DIR> --ckpt <CHECKPOINT_PATH>
+```
+
+Please replace `<CONFIG_FILE_PATH>`, `<OUTPUT_DIR>`, and `<CHECKPOINT_PATH>` with the values of the actual path.
+
+**Note:** The generated results consist of four images arranged in parallel:  
+
+- The first image is the original input image.  
+- The second image is the visualization of the GT mask.  
+- The third image is the result obtained by direct testing through SAM.  
+- The fourth image is the result obtained using the provided checkpoint.
+
+
 ## 💡 Acknowledgement
 
 - [wesam](https://github.com/zhang-haojie/wesam)
