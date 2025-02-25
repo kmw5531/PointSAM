@@ -121,7 +121,7 @@ Please replace `<CONFIG_FILE_PATH>`, `<OUTPUT_DIR>`, and `<CHECKPOINT_PATH>` wit
 
 - The first image is the original input image.  
 - The second image is the visualization of the GT mask.  
-- The third image is the result obtained by direct testing through SAM.  
+- The third image is the result obtained by direct testing through the original SAM.  
 - The fourth image is the result obtained using the provided checkpoint.
 
 
