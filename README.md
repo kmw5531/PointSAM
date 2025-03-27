@@ -10,6 +10,14 @@
 </div>
 
 ---
+
+## 📢 Notice
+
+**Because the issue has been abused recently, I have temporarily closed it. If you have any questions, you can contact me via email at lansing163@163.com.**
+
+---
+
+---
 ## 📢 Latest Updates
 - **2 Jan 2025**: **PointSAM** has been accepted by TGRS and is now available [here](https://ieeexplore.ieee.org/document/10839471).
 - **8 Dec 2024**: The complete code is released.
