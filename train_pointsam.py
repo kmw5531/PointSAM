@@ -35,13 +35,15 @@ def train_sam(
     val_dataloader: DataLoader,
     target_pts,
 ):
-
+    # 손실 함수 및 초기 변수 설정
     focal_loss = FocalLoss()
     dice_loss = DiceLoss()
     max_iou = 0.
     mem_bank = Store(1, cfg.mem_bank_max_len) 
     match_interval = cfg.match_interval
+    # 에포크 및 배치 루프
     for epoch in range(1, cfg.num_epochs + 1):
+        # 배치별 시간, 손실 측정을 위한 AverageMeter 객체 생성
         batch_time = AverageMeter()
         data_time = AverageMeter()
         focal_losses = AverageMeter()
@@ -67,16 +69,16 @@ def train_sam(
             #1. caculate pairwise IoUs of masks
             mask_ious, init_masks = cal_mask_ious(cfg, model, images_weak, prompts, gt_masks)
        
-            #2. get new prompts through neg_prompt_calibration
+            #2. 부정 프롬프트 보정을 통해 새로운 프롬프트 생성
             new_prompts = neg_prompt_calibration(cfg, mask_ious, prompts)
 
             #3. start training using new prompt
-            soft_image_embeds, soft_masks, _, _ = model(images_weak, new_prompts)    # teacher
+            soft_image_embeds, soft_masks, _, _ = model(images_weak, new_prompts)    # teacher : 부정 프롬프트 보정이 된 새로운 프롬프트를 통해 예측  
             
             if isinstance(soft_image_embeds, dict):
                 soft_image_embeds = soft_image_embeds['vision_features']  
                 
-            _, pred_masks, iou_predictions, _= model(images_strong, prompts)   # student
+            _, pred_masks, iou_predictions, _= model(images_strong, prompts)   # student : 원본 프롬프트를 이용한 예측
 
             del _
 
@@ -89,6 +91,8 @@ def train_sam(
             for i, (embed, pred_mask, soft_mask,  gt_mask, prompt, iou_prediction) in enumerate(zip(soft_image_embeds, pred_masks, soft_masks, gt_masks, prompts, iou_predictions)):
                     
                 soft_mask = (soft_mask > 0.).float()
+                #  메모리 뱅크를 통한 FINCH 클러스터링 및 Matching Loss 계산
+                # 메모리 뱅크 : 예측 피쳐를 저장 후, 충분한 데이터가 쌓이면 FINCH 클러스터링을 적용하여 Matching Loss를 계산합니다
                 pred_feats = generate_predict_feats(cfg, embed, soft_mask, prompt)
                 target_pts_ = target_pts['target_pts']  
                 pred_feats = pred_feats.cpu().tolist()
@@ -106,7 +110,7 @@ def train_sam(
                     loss_match += Matching_Loss(pred_pts, target_pts_, device = fabric.device)
 
                 del embed
-                
+                # vis가 활성화된 경우, 이미지 및 마스크 결과를 저장하여 시각적으로 확인할 수 있습니다
                 if vis:
                     img_name = os.path.basename(img_paths[i]).split('.')[0]
                     
@@ -159,7 +163,7 @@ def train_sam(
                 loss_iou += F.mse_loss(iou_prediction, batch_iou, reduction='sum') / num_masks
                 
             del soft_image_embeds, pred_masks, iou_predictions, gt_masks 
-                
+            # 전체 손실 계산 및 역전파    
             loss_total = 20. * loss_focal + loss_dice + loss_iou + 0.1*loss_match            
 
             fabric.backward(loss_total)
@@ -179,6 +183,7 @@ def train_sam(
             match_losses.update(loss_match.item(), batch_size)
 
             if (iter+1) %match_interval==0:
+                # 에포크마다 validate 함수를 호출하여 검증하고, 최고 IoU를 기록하면 모델 체크포인트를 저장합니다.
                 fabric.print(f'Epoch: [{epoch}][{iter + 1}/{len(train_dataloader)}]'
                              f' | Time [{batch_time.val:.3f}s ({batch_time.avg:.3f}s)]'
                              f' | Data [{data_time.val:.3f}s ({data_time.avg:.3f}s)]'
@@ -240,11 +245,11 @@ def main(cfg: Box) -> None:
                       loggers=[TensorBoardLogger(cfg.out_dir)])
     fabric.launch()
     fabric.seed_everything(1337 + fabric.global_rank)
-
+    # 체크포인트 폴더 생성 및 CSV 파일 초기화: 학습 결과를 저장할 디렉토리를 만들고, 로그를 기록할 CSV 파일을 생성합니다.
     if fabric.global_rank == 0:
         os.makedirs(os.path.join(cfg.out_dir, "save"), exist_ok=True)
         create_csv(os.path.join(cfg.out_dir, "metrics.csv"), csv_head=cfg.csv_keys)
-
+    # 모델 및 데이터셋 로드
     with fabric.device:
         model = Model(cfg)
         model.setup()
@@ -254,6 +259,8 @@ def main(cfg: Box) -> None:
     train_data = fabric._setup_dataloader(train_data)
     val_data = fabric._setup_dataloader(val_data)
     pt_data = fabric._setup_dataloader(pt_data)
+
+    # 옵티마이저, 스케줄러 및 모델 체크포인트 로드
     optimizer, scheduler = configure_opt(cfg, model)
     model, optimizer = fabric.setup(model, optimizer)
 
@@ -267,6 +274,7 @@ def main(cfg: Box) -> None:
     print('-'*100)
     del _     
     
+    # offline_prototypes_generation : gt값을 이용하여 프로토타입을 생성 
     target_pts = offline_prototypes_generation(cfg, model, pt_data)
     
     train_sam(cfg, fabric, model, optimizer, scheduler, train_data, val_data, target_pts)
@@ -293,7 +301,7 @@ if __name__ == "__main__":
     exec(f'from {args.cfg} import cfg')
 
     # transfer the args to a dict
-    args_dict = vars(args)
+    args_dict = vars(args)  
     cfg.merge_update(args_dict)
 
     main(cfg)

@@ -32,7 +32,7 @@ config = {
         "weight_decay": 1e-4,
         "decay_factor": 10,
         "steps": [2000, 4000],
-        "warmup_steps": 250,
+        "warmup_steps": 250, # 초기 학습률 증가시킴(250번의 iteration동안 서서히 학습률을 증가시켜켜 5e-4까지 증가시킴) 
     },
 }
 

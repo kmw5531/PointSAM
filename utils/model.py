@@ -25,7 +25,12 @@ class Model(nn.Module):
         return checkpoint
 
     def setup(self):
-        if self.cfg.model.type in ['vit_b','vit_l','vit_h']:
+        # pruning 전용 inference 모드: prune_ckpt 가 있으면 바로 그 모델을 로드
+        if getattr(self.cfg, "prune_ckpt", None):
+            # pruning 단계에서 torch.save(model) 한 객체을 그대로 불러옵니다
+            self.model = torch.load(self.cfg.prune_ckpt, map_location='cpu')
+            self.base = 'sam'
+        elif self.cfg.model.type in ['vit_b','vit_l','vit_h']:
             checkpoint = self.get_checkpoint(self.cfg.model.type)
             self.model = sam_model_registry[self.cfg.model.type](checkpoint=checkpoint)
             self.base = 'sam'
@@ -55,12 +60,22 @@ class Model(nn.Module):
             except:
                 for param in self.model.sam_prompt_encoder.parameters():
                     param.requires_grad = False
-        
+        # pruning inference 에선 finetune/LoRA 적용 안 함
         self.model.train()
-        self.finetune()
+        if not getattr(self.cfg, "prune_ckpt", None):
+            self.finetune()
 
     def finetune(self):
-        LoRA_Sam(self.model, self.cfg.lora_rank, lora_layer=list(range(self.cfg.start_lora_layer, len(self.model.image_encoder.blocks))))
+                # lora_rank > 0 일 때만 LoRA 패치 적용
+        if getattr(self.cfg, "lora_rank", 0) > 0:
+            LoRA_Sam(
+                self.model,
+                self.cfg.lora_rank,
+                lora_layer=list(range(self.cfg.start_lora_layer,
+                                      len(self.model.image_encoder.blocks)))
+            )
+        # 밑에 한줄 기존 코드임 , 현재 inference 단계를 위해 수정함함
+        #LoRA_Sam(self.model, self.cfg.lora_rank, lora_layer=list(range(self.cfg.start_lora_layer, len(self.model.image_encoder.blocks))))
         # self.set_adapter_layer()
         # self.set_norm_layer()
         # print(self.model)

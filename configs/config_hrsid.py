@@ -4,19 +4,19 @@ from configs.base_config import base_config
 config = {
     "dataset": "HRSID", 
     "load_type": "soft",
-    "num_points": 1,
+    "num_points": 3,
     
     "batch_size": 1, #only support 1
     "val_batchsize": 1,
     "num_workers": 0,
     "num_epochs": 10,
-    "max_nums": 50,
+    "max_nums": 50, # 한 이미지 내의 최대 인스턴스 수
     "resume": False,
 
     "start_lora_layer": 1,
     "lora_rank": 4,
-    "mem_bank_max_len": 512,
-    "match_interval": 30,
+    "mem_bank_max_len": 512, # 메모리 뱅크에 저장할 최대 특징 벡터 수 
+    "match_interval": 30,# 매칭/클러스터링 검증(FINCH) 수행 주기
     "iou_thr": 0.1,
 
     "prompt": "point",

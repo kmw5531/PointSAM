@@ -119,3 +119,7 @@ dmypy.json
 .idea
 *work_dirs*
 tmp
+#kmw
+data/*
+pretrain/*
+work_dir/*

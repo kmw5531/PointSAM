@@ -31,40 +31,50 @@ class WHUDataset(Dataset):
 
     def __len__(self):
         return len(self.image_ids)
-
+    # 주어진 인덱스 idx에 해당하는 image_id를 가져오고, COCO에서 그 이미지의 정보를 읽어옵니다.
     def __getitem__(self, idx):
+         # 1. 데이터셋에서 idx번째 이미지의 고유 ID를 가져옴.
         image_id = self.image_ids[idx]
+         # 2. COCO 주석 객체(coco)를 이용해 해당 이미지의 메타정보를 불러옴.
+    #    coco.loadImgs(image_id)는 이미지 정보를 담은 리스트를 반환하므로, 첫 번째 요소를 선택합니다.
         image_info = self.coco.loadImgs(image_id)[0]
         if self.training or self.gen_pt:
-            image_path = os.path.join(self.root_dir,'train/image', image_info["file_name"])
+            image_path = os.path.join(self.root_dir,'Images/train/image', image_info["file_name"])
         else:
-            image_path = os.path.join(self.root_dir,'val/image', image_info["file_name"])
+            image_path = os.path.join(self.root_dir,'Images/val/image', image_info["file_name"])
         image = cv2.imread(image_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
+        # 6. COCO 객체의 메소드를 사용하여 해당 이미지에 대한 주석(annotations) ID들을 불러옵니다.
         ann_ids = self.coco.getAnnIds(imgIds=image_id)
+        # 7. 주석 ID들을 기반으로 주석 세부 정보를 불러옵니다.
         anns = self.coco.loadAnns(ann_ids)
         bboxes = []
         masks = []
         categories = []
+         # 9. 불러온 모든 주석(객체)들에 대해 루프를 돌며 정보를 추출합니다.
         for ann in anns:
             x, y, w, h = ann["bbox"]
             bboxes.append([x, y, x + w, y + h])
+             # coco.annToMask(ann) 메서드를 사용하여, 주석으로부터 해당 객체의 이진 마스크를 생성
             mask = self.coco.annToMask(ann)
             masks.append(mask)
+            # 주석 안의 category_id 값을 저장합니다.
             categories.append(ann["category_id"])
-
+        # 10. 만약 self-training (또는 pseudo-label 생성) 모드라면,
+        # "soft_transform" 함수를 사용해 이미지 및 객체 정보를 변형한 후 두 버전(약한/강한 augmentation)을 반환합니다.
         if self.if_self_training:
             image_weak, bboxes_weak, masks_weak, image_strong = soft_transform(image, bboxes, masks, categories)
-
+            # 추가로, self.transform이 정의되어 있다면(예: Resize 및 Padding 등) 해당 변환을 적용합니다.
             if self.transform:
                 image_weak, masks_weak, bboxes_weak = self.transform(image_weak, masks_weak, np.array(bboxes_weak))
                 image_strong = self.transform.transform_image(image_strong)
 
             bboxes_weak = np.stack(bboxes_weak, axis=0)
             masks_weak = np.stack(masks_weak, axis=0)
+             # 최종적으로 약한 이미지, 강한 이미지, 바운딩 박스, 마스크, 그리고 원본 이미지 경로를 반환합니다.
             return image_weak, image_strong, torch.tensor(bboxes_weak), torch.tensor(masks_weak).float(), image_path
-
+        # 11. 만약 시각화(visualization) 모드라면,
+        # 원본 이미지와 주석 정보를 그대로 반환하면서, 추가적인 변환(padding 등)을 적용하여 원본 데이터를 보존합니다.
         elif self.cfg.visual:
             origin_image = image
             origin_bboxes = bboxes
